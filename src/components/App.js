@@ -1,28 +1,37 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useEffect } from "react";
 import Header from "./Header";
 import PlantPage from "./PlantPage";
+import NewPlantForm from "./NewPlantForm";
+import Search from "./Search";
 
 function App() {
-  const [plants, setPlants] = useState([])
-  const [search, setSearch] = useState("")
+  const [plants, setPlants] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(()=> {
+  useEffect(() => {
     fetch("http://localhost:6001/plants")
-    .then(response=>response.json())
-    .then(data=>{
-      setPlants(data)
-      console.log(data)
-    })}, 
-  []);
+      .then((r) => r.json())
+      .then((data) => {
+        console.log("Fetched plants:", data);
+        setPlants(data);
+      });
+  }, []);
 
-  const filteredPlants = plants.filter((plant)=> {
-    return plant.name.toLowerCase().includes(search.toLowerCase())
-  })
+  const handleAddPlant = (newPlant) => {
+    setPlants([...plants, newPlant]);
+  };
+
+  const filteredPlants = plants.filter((plant) =>
+    plant.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="app">
       <Header />
-      <PlantPage plants={filteredPlants} setPlants={setPlants} search={search} setSearch={setSearch}/>
+      <NewPlantForm onAddPlant={handleAddPlant} />
+      <Search onSearch={setSearchTerm} />
+      <PlantPage plants={filteredPlants} />
     </div>
   );
 }
